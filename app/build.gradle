@@ -17,6 +17,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+    }
 }
 
 dependencies {
@@ -24,4 +33,14 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'org.slf4j:slf4j-jdk14:1.7.12'
+    compile group: 'info.movito', name: 'themoviedbapi', version:'1.1'
+
 }
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
