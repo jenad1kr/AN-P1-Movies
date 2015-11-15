@@ -1,14 +1,23 @@
 package com.karthick.android.an_p1_movies;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,9 +33,8 @@ import java.util.Arrays;
  */
 public class MainActivityFragment extends Fragment {
 
-    private AndroidFlavorAdapter flavorAdapter;
-    private MovieDbAdapter movieDbAdapter;
     private MovieAdapter movieAdapter;
+    private FetchMoviesTask fetchMoviesTask;
 
 
 
@@ -50,140 +58,42 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        //inflater.inflate(R.menu.menu_main, menu);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final String MOVIEDB_BASE_URL = "http://api.themoviedb.org/3/discover/movie?";
-        final String SORTBY_PARAM = "sort_by";
-        final String FORMAT_PARAM = "mode";
-        final String UNITS_PARAM = "units";
-        final String DAYS_PARAM = "cnt";
-        final String APIKEY_PARAM = "api_key";
-
-
-        //return inflater.inflate(R.layout.fragment_main, container, false);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        movieAdapter = new MovieAdapter(getActivity(),UpdateMoviesList());
+        Log.i("OnCreateView","UpdateMoviesList called");
+        GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid);
+        gridView.setAdapter(movieAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Context context = getContext();
+                CharSequence text = ((Movie) adapterView.getItemAtPosition(i)).movieName;
+                int duration = Toast.LENGTH_SHORT;Toast toast = Toast.makeText(context, text, duration);
+                toast.show();
+
+                Intent DetailIntent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT,  adapterView.getItemAtPosition(i).toString());
 
 
-        //ListView listView = (ListView) rootView.findViewById(R.id.listview_flavor);
-        //listView.setAdapter(flavorAdapter);
+                //Bundle bundle = new Bundle();
 
-        //TmdbMovies movies = new TmdbApi("API_KEY").getMovies();
-        //MovieDb movie = movies.getMovie(5353, "en");
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
+                //bundle.putString("Display", (String) adapterView.getItemAtPosition(i));
 
-        // Will contain the raw JSON response as a string.
-        String MoviesJsonStr = null;
+                startActivity(DetailIntent);
 
-        try {
-            // Construct the URL for the OpenWeatherMap query
-            // Possible parameters are avaiable at OWM's forecast API page, at
-            // http://openweathermap.org/API#forecast
-
-
-/*
-            Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
-                                    .appendQueryParameter(QUERY_PARAM, params[0])
-                                    .appendQueryParameter(FORMAT_PARAM, format)
-                                    .appendQueryParameter(UNITS_PARAM, units)
-                                    .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                                    .appendQueryParameter(APPKEY_PARAM, R.string.moviedb_apikey)
-                                    .build();
-
-                                    */
-
-            String sortBy = "popularity.desc";
-            Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
-                    .appendQueryParameter(SORTBY_PARAM, sortBy)
-                    .appendQueryParameter(APIKEY_PARAM, "88695003bd93ff97de5678f06d58fe4a")
-                    .build();
-
-
-            URL url = new URL(builtUri.toString());
-            Log.v("LOGMSG", "Built URI " + builtUri.toString());
-
-            // Create the request to OpenWeatherMap, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-
-            int SDK_INT = android.os.Build.VERSION.SDK_INT;
-            if (SDK_INT > 8)
-            {
-                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
-                        .permitAll().build();
-                StrictMode.setThreadPolicy(policy);
-                //your codes here
-
-
-
-            // Create the request to OpenWeatherMap, and open the connection
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
             }
-            // Read the input stream into a String
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                return null;
-            }
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
-            }
-
-            if (buffer.length() == 0) {
-                // Stream was empty.  No point in parsing.
-                return null;
-            }
-            MoviesJsonStr = buffer.toString();
-            Log.v("LOGMSG", "returned JSON STR " + MoviesJsonStr);
-            movieAdapter = new MovieAdapter(getActivity(),MovieJSONParser.getMovies(MoviesJsonStr));
-            GridView gridView = (GridView) rootView.findViewById(R.id.movies_grid);
-            gridView.setAdapter(movieAdapter);
-
-
-
-        } catch (Exception e) {
-            Log.e("PlaceholderFragment", "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attemping
-            // to parse it.
-        } finally{
-            if (urlConnection != null) {
-                urlConnection.disconnect();
-            }
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (final IOException e) {
-                    Log.e("PlaceholderFragment", "Error closing stream", e);
-                }
-            }
-        }
-
-        //List<MovieDb> moviedblist = movies.getPopularMovieList("en", 1).getResults();
-
-
-
-        //flavorAdapter = new AndroidFlavorAdapter(getActivity(), Arrays.asList(androidFlavors));
-        //flavorAdapter = new AndroidFlavorAdapter(getActivity(), androidFlavorArrayList);
-
-        //use the following if using Movie Object
-
-
-        //use the following for MovieDb
-        //GridView gridView = (GridView) rootView.findViewById(R.id.flavors_grid);
-        //gridView.setAdapter(movieDbAdapter);
-
-
-
+        });
 
         return rootView;
 
@@ -196,6 +106,12 @@ public class MainActivityFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        //UpdateMoviesList();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null || !savedInstanceState.containsKey("flavors")) {
@@ -205,4 +121,118 @@ public class MainActivityFragment extends Fragment {
             androidFlavorArrayList = savedInstanceState.getParcelableArrayList("flavors");
         }
     }
+
+    private ArrayList<Movie> UpdateMoviesList() {
+        fetchMoviesTask = new FetchMoviesTask();
+
+        try {
+            Log.i("updmovieslist","UpdateMoviesList called");
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        /*
+        SharedPreferences.Editor edit = prefs.edit();
+        edit.putString(getString(R.string.pref_popular_key),"desc");
+        edit.putString(getString(R.string.pref_rating_key),"desc");
+        edit.commit();
+        */
+            String[] params = new String[1];
+            params[0] = prefs.getString("sort_order", "popularity.desc");
+            Log.i("params[0]", params[0]);
+
+            return fetchMoviesTask.execute(params).get();
+        }catch (Exception e){
+            Log.e("updatemovieslist", e.getMessage());
+        }
+        return null;
+    }
+
+    private class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<Movie>> {
+
+        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
+
+
+        @Override
+        protected ArrayList<Movie> doInBackground(String... params) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            String MoviesJsonStr = null;
+            //String[] returnvalue = new String[1];
+
+            try {
+
+
+                Uri builtUri = Uri.parse(getString(R.string.url_moiveDB)).buildUpon()
+                        .appendQueryParameter(getString(R.string.url_param_sort_by), params[0])
+                        .appendQueryParameter(getString(R.string.url_param_api_key), getString(R.string.moviedb_apikey))
+                        .build();
+
+
+                URL url = new URL(builtUri.toString());
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                int SDK_INT = android.os.Build.VERSION.SDK_INT;
+                if (SDK_INT > 8)
+                {
+                    StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                            .permitAll().build();
+                    StrictMode.setThreadPolicy(policy);
+                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.connect();
+                }
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                MoviesJsonStr = buffer.toString();
+                Log.v(LOG_TAG, "returned JSON STR " + MoviesJsonStr);
+                //returnvalue[0] = MoviesJsonStr;
+                //return returnvalue;
+
+                return MovieJSONParser.getMovies(MoviesJsonStr);
+            } catch (Exception e) {
+                Log.e("PlaceholderFragment", "Error ", e);
+            } finally{
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Movie> movies) {
+            super.onPostExecute(movies);
+        }
+
+
+    }
 }
+
+

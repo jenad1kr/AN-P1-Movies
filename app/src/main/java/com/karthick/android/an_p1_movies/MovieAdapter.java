@@ -2,6 +2,7 @@ package com.karthick.android.an_p1_movies;
 
 import android.app.Activity;
 import android.net.Uri;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -26,13 +28,17 @@ import java.util.Locale;
 
     public class MovieAdapter extends ArrayAdapter<Movie> {
         private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
-    final String MOVIEIMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
+        final String MOVIEIMAGE_BASE_URL = "http://image.tmdb.org/t/p/w185/";
 
         public MovieAdapter(Activity context, List<Movie> Movies)
         {
             super(context, 0, Movies);
         }
 
+        public MovieAdapter(FragmentActivity context, ArrayList<Movie> Movies)
+        {
+            super(context, 0, Movies);
+        }
 
 
         @Override
