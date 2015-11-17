@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -75,8 +74,8 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Context context = getContext();
                 CharSequence text = ((Movie) adapterView.getItemAtPosition(i)).movieName;
-                int duration = Toast.LENGTH_SHORT;Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                //int duration = Toast.LENGTH_SHORT;Toast toast = Toast.makeText(context, text, duration);
+                //toast.show();
 
                 Intent DetailIntent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra("selected_movie", (Movie) adapterView.getItemAtPosition(i));
