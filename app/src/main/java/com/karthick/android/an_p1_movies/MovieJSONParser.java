@@ -18,7 +18,8 @@ public class MovieJSONParser {
         return new Movie(movie.getString("title"),
                             movie.getDouble("vote_average"),
                             movie.getString("release_date"),
-                            movie.getString("poster_path")
+                movie.getString("poster_path"),
+                movie.getString("overview")
                               );
         //return Double.parseDouble(maxval);
 
@@ -36,7 +37,8 @@ public class MovieJSONParser {
             movieArrayList.add(new Movie(movies.getJSONObject(i).getString("title"),
                     movies.getJSONObject(i).getDouble("vote_average"),
                     movies.getJSONObject(i).getString("release_date"),
-                    movies.getJSONObject(i).getString("poster_path")
+                    movies.getJSONObject(i).getString("poster_path"),
+                    movies.getJSONObject(i).getString("overview")
             ));
         }
 

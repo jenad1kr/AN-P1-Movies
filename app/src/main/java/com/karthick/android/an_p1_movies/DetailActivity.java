@@ -6,11 +6,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 public class DetailActivity extends AppCompatActivity {
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,15 @@ public class DetailActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                Log.i("onoptitemsel", "this.finish called starting mainactivity");
+                startActivity(new Intent(this, MainActivity.class));
+                return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {

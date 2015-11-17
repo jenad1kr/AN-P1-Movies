@@ -33,11 +33,6 @@ import java.util.Arrays;
  */
 public class MainActivityFragment extends Fragment {
 
-    private MovieAdapter movieAdapter;
-    private FetchMoviesTask fetchMoviesTask;
-
-
-
     AndroidFlavor[] androidFlavors = {
             new AndroidFlavor("Cupcake", "1.5", R.drawable.cupcake),
             new AndroidFlavor("Donut", "1.6", R.drawable.donut),
@@ -50,8 +45,9 @@ public class MainActivityFragment extends Fragment {
             new AndroidFlavor("KitKat", "4.4-4.4.4", R.drawable.kitkat),
             new AndroidFlavor("Lollipop", "5.0-5.1.1", R.drawable.lollipop)
     };
-
     ArrayList<AndroidFlavor> androidFlavorArrayList;
+    private MovieAdapter movieAdapter;
+    private FetchMoviesTask fetchMoviesTask;
 
 
     public MainActivityFragment() {
@@ -83,15 +79,8 @@ public class MainActivityFragment extends Fragment {
                 toast.show();
 
                 Intent DetailIntent = new Intent(getActivity(), DetailActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT,  adapterView.getItemAtPosition(i).toString());
-
-
-                //Bundle bundle = new Bundle();
-
-                //bundle.putString("Display", (String) adapterView.getItemAtPosition(i));
-
+                        .putExtra("selected_movie", (Movie) adapterView.getItemAtPosition(i));
                 startActivity(DetailIntent);
-
             }
         });
 
@@ -155,7 +144,7 @@ public class MainActivityFragment extends Fragment {
 
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
-            String MoviesJsonStr = null;
+            String MoviesJsonStr;
             //String[] returnvalue = new String[1];
 
             try {

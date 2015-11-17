@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AN-P1-Movies</string>
+    <string name="app_name">Movies</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_settings">Settings</string>
 
@@ -76,6 +76,6 @@
     <string name="url_param_sort_by">sort_by</string>
     <string name="url_param_api_key">api_key</string>
     <string name="url_moiveDB">http://api.themoviedb.org/3/discover/movie?</string>
-    <string name="title_activity_detail">DetailActivity</string>
+    <string name="title_activity_detail">Details</string>
 
 </resources>
