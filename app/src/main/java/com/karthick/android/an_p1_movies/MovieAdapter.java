@@ -55,18 +55,17 @@ import java.util.Locale;
             }
 
             ImageView iconView = (ImageView) convertView.findViewById(R.id.list_item_icon);
-            //iconView.setImageResource(movie.image);
-
-
             try{
                 Uri builtUri = Uri.parse(MOVIEIMAGE_BASE_URL).buildUpon()
                         .appendEncodedPath(movie.posterPath)
                         .build();
-                //Log.i(LOG_TAG, builtUri.toString());
-                //iconView.setImageURI(builtUri);
-                //iconView.setImageURI(Uri.parse("http://image.tmdb.org/t/p/w185//q0R4crx2SehcEEQEkYObktdeFy.jpg"));
-                Picasso.with(getContext()).load(builtUri).into(iconView);
+                //Picasso.with(getContext()).load(builtUri).into(iconView);
 
+                Picasso.with(getContext())
+                        .load(builtUri)
+                        .placeholder(R.drawable.cupcake)
+                        .error(R.drawable.honeycomb)
+                        .into(iconView);
             }catch (Exception e){
                 Log.e(LOG_TAG, e.getMessage());
             }

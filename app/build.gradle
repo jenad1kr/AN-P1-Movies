@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.karthick.android.an_p1_movies"
-        minSdkVersion 23
+        minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.1"
     }
     buildTypes {
         release {
